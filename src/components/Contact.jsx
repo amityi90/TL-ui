@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: 'General Inquiry',
+    message: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    alert('Thank you for your inquiry. We will respond shortly.');
+  };
+
+  return (
+    <div className="bg-[#FAF9F6] min-h-screen pt-32 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-20"
+        >
+            <h1 className="text-4xl md:text-5xl font-serif mb-4">Contact Us</h1>
+            <p className="text-gray-500 text-sm tracking-[0.2em] uppercase">We'd love to hear from you</p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+            
+            {/* Left Side: Boutique Info */}
+            <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="space-y-12"
+            >
+                <div>
+                    <h2 className="text-2xl font-serif mb-6">Visit the Boutique</h2>
+                    <p className="text-gray-600 mb-2">123 Rodeo Drive</p>
+                    <p className="text-gray-600 mb-4">Beverly Hills, CA 90210</p>
+                    <a href="tel:+13105550123" className="text-black border-b border-black text-sm uppercase tracking-widest pb-1 hover:opacity-60 transition-opacity">
+                        +1 (310) 555-0123
+                    </a>
+                </div>
+
+                <div className="aspect-video w-full bg-gray-200 grayscale opacity-80 relative overflow-hidden">
+                    {/* Placeholder for Map - using static image for demo */}
+                    <img 
+                        src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop" 
+                        alt="Map location" 
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                        <span className="bg-white px-4 py-2 text-xs uppercase tracking-widest shadow-lg">View on Google Maps</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 className="text-sm font-bold uppercase tracking-widest mb-4">Hours</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 max-w-xs">
+                        <span>Monday - Friday</span>
+                        <span className="text-right">10am — 7pm</span>
+                        <span>Saturday</span>
+                        <span className="text-right">11am — 5pm</span>
+                        <span>Sunday</span>
+                        <span className="text-right">By Appointment</span>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Right Side: Form */}
+            <motion.div 
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+            >
+                <h2 className="text-2xl font-serif mb-8">Bespoke Inquiries</h2>
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-400 uppercase tracking-wider">Name</label>
+                        <input 
+                            type="text" 
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors"
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-400 uppercase tracking-wider">Email</label>
+                        <input 
+                            type="email" 
+                            name="email"
+                            required
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors"
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-400 uppercase tracking-wider">Subject</label>
+                        <select 
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors appearance-none"
+                        >
+                            <option>General Inquiry</option>
+                            <option>Bespoke Commission</option>
+                            <option>Private Viewing Appointment</option>
+                            <option>Press & Media</option>
+                        </select>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-400 uppercase tracking-wider">Message</label>
+                        <textarea 
+                            name="message"
+                            required
+                            rows="4"
+                            value={formData.message}
+                            onChange={handleChange}
+                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors resize-none"
+                        ></textarea>
+                    </div>
+
+                    <button 
+                        type="submit"
+                        className="w-full bg-black text-white text-sm uppercase tracking-[0.2em] py-4 hover:bg-gray-800 transition-colors duration-500"
+                    >
+                        Send Message
+                    </button>
+                </form>
+            </motion.div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
