@@ -25,7 +25,7 @@ const cardStyle = {
   }
 };
 
-function CheckoutForm({ onClose }) {
+function CheckoutForm({ onClose, apiUrl }) {
   const stripe = useStripe();
   const elements = useElements();
   const { cart, subtotal, clearCart, removeFromCart } = useCart();
@@ -70,7 +70,7 @@ function CheckoutForm({ onClose }) {
 
     try {
       // 1. Create Payment Intent
-      const intentResponse = await fetch('http://localhost:5000/api/payments/create-intent', {
+      const intentResponse = await fetch(`${apiUrl}/api/payments/create-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -116,7 +116,7 @@ function CheckoutForm({ onClose }) {
           status: 'paid'
         };
 
-        const orderResponse = await fetch('http://localhost:5000/api/orders', {
+        const orderResponse = await fetch(`${apiUrl}/api/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(orderData)
@@ -358,7 +358,7 @@ function CheckoutForm({ onClose }) {
   );
 }
 
-export default function CartPage({ onClose }) {
+export default function CartPage({ onClose, apiUrl }) {
   const { cart } = useCart();
 
   if (cart.length === 0) {
@@ -380,7 +380,7 @@ export default function CartPage({ onClose }) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative">
       <h1 className="text-4xl font-serif mb-12 text-center md:text-left">Checkout</h1>
       <Elements stripe={stripePromise}>
-        <CheckoutForm onClose={onClose} />
+        <CheckoutForm onClose={onClose} apiUrl={apiUrl} />
       </Elements>
     </div>
   );

@@ -13,10 +13,12 @@ function Store() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const [apiUrl] = useState('https://zukpyagzmf.eu-west-3.awsapprunner.com');
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/products');
+        const res = await fetch(`${apiUrl}/api/products`);
         const data = await res.json();
         
         // Log to see what the backend is actually returning
@@ -63,7 +65,7 @@ function Store() {
         case 'cart':
             return (
                 <main className="flex-grow pt-20 fade-in">
-                    <CartPage onClose={() => setCurrentView('home')} />
+                    <CartPage onClose={() => setCurrentView('home')} apiUrl={apiUrl} />
                 </main>
             );
         case 'about':
