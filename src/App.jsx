@@ -9,40 +9,27 @@ import About from './components/About';
 import Contact from './components/Contact';
 import { CartProvider } from './context/CartContext';
 
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 function Store() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [apiUrl] = useState('https://zukpyagzmf.eu-west-3.awsapprunner.com');
-  
   useEffect(() => {
+    const controller = new AbortController();
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/products`);
+        const res = await fetch(`${apiUrl}/api/products`, { signal: controller.signal });
         const data = await res.json();
-        
-        // Log to see what the backend is actually returning
-        console.log("API Response:", data);
-
-        // Handle different response structures
-        if (Array.isArray(data)) {
-            setProducts(data);
-        } else if (data && Array.isArray(data.products)) {
-            // If backend returns { products: [...] }
-            setProducts(data.products); 
-        } else if (data && Array.isArray(data.data)) {
-             // If backend returns { data: [...] }
-            setProducts(data.data);
-        } else {
-            console.error("Unexpected API response format:", data);
-            setProducts([]); // Fallback to empty array to prevent crash
-        }
+        setProducts(Array.isArray(data?.data) ? data.data : []);
       } catch (error) {
+        if (error.name === 'AbortError') return;
         console.error("Failed to fetch products:", error);
         setProducts([]);
       }
     };
     fetchProducts();
+    return () => controller.abort();
   }, []);
 
   const [currentView, setCurrentView] = useState('home'); // 'home', 'cart', 'about', 'contact'
@@ -90,9 +77,9 @@ function Store() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
                         {Array.isArray(products) && products.map((product) => (
-                          <ProductCard 
-                            key={product._id} 
-                            product={product} 
+                          <ProductCard
+                            key={product.id}
+                            product={product}
                             onClick={handleProductClick}
                           />
                         ))}

@@ -4,10 +4,15 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
+// Bumped from 'tl_cart' when the API moved from Mongo _id strings to integer
+// ids. Returning visitors' saved carts hold the old shape, so they are dropped
+// rather than posted to an API that no longer understands them.
+const CART_STORAGE_KEY = 'tl_cart_v2';
+
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
     try {
-      const localData = localStorage.getItem('tl_cart');
+      const localData = localStorage.getItem(CART_STORAGE_KEY);
       return localData ? JSON.parse(localData) : [];
     } catch {
       return [];
@@ -17,15 +22,15 @@ export const CartProvider = ({ children }) => {
   const [isToastOpen, setIsToastOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('tl_cart', JSON.stringify(cart));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item._id === product._id);
+      const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
         return prevCart.map((item) =>
-          item._id === product._id
+          item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -39,13 +44,13 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (productId) => {
-    setCart((prevCart) => prevCart.filter((item) => item._id !== productId));
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
   const updateQuantity = (productId, delta) => {
     setCart((prevCart) =>
       prevCart.map((item) => {
-        if (item._id === productId) {
+        if (item.id === productId) {
           const newQuantity = Math.max(1, item.quantity + delta);
           return { ...item, quantity: newQuantity };
         }

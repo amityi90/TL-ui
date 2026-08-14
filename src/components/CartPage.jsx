@@ -169,7 +169,7 @@ function CheckoutForm({ onClose, apiUrl }) {
                 <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">1. Shopping Bag ({cart.length})</h2>
                 <div className="space-y-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                     {cart.map((item) => (
-                        <div key={item._id} className="flex gap-4 items-center">
+                        <div key={item.id} className="flex gap-4 items-center">
                              <div className="w-16 h-20 bg-gray-100 shrink-0">
                                 <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover" />
                             </div>
@@ -178,7 +178,7 @@ function CheckoutForm({ onClose, apiUrl }) {
                                 <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                             </div>
                             <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                            <button onClick={() => removeFromCart(item._id)} className="text-gray-400 hover:text-red-500">
+                            <button onClick={() => removeFromCart(item.id)} className="text-gray-400 hover:text-red-500">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
