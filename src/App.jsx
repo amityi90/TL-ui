@@ -34,10 +34,18 @@ function Store() {
 
   const [currentView, setCurrentView] = useState('home'); // 'home', 'cart', 'about', 'contact'
 
-  // Update navbar to scroll back to top on view change
+  // Covers programmatic view changes, e.g. CartPage's "Return to Shop".
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
+
+  // Scrolls unconditionally. Setting the view to the one already active is a
+  // no-op for React, so the effect above never re-runs — which made "Collections"
+  // a dead click while already on the home page.
+  const handleNavClick = (view) => {
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -95,13 +103,13 @@ function Store() {
   return (
     <div className="font-sans antialiased text-gray-900 bg-white flex flex-col min-h-screen">
       <Navbar 
-        onCartClick={() => setCurrentView(currentView === 'cart' ? 'home' : 'cart')} 
-        onNavClick={(view) => setCurrentView(view)}
+        onCartClick={() => handleNavClick(currentView === 'cart' ? 'home' : 'cart')}
+        onNavClick={handleNavClick}
       />
       
       {renderContent()}
 
-      <Footer onNavClick={(view) => setCurrentView(view)} />
+      <Footer onNavClick={handleNavClick} />
       
       <ProductDrawer 
         product={selectedProduct} 
