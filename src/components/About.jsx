@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useContent } from '../context/ContentContext';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -17,15 +18,17 @@ const staggerContainer = {
 };
 
 export default function About() {
+  const { c } = useContent();
+
   return (
     <div className="bg-[#FAF9F6] min-h-screen pt-20">
       
       {/* Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-black/20 z-10" />
-        <img 
-            src="https://images.unsplash.com/photo-1617038224538-2763fcc16382?q=80&w=2000&auto=format&fit=crop" 
-            alt="Jeweler working" 
+        <img
+            src={c('about.hero_image')}
+            alt={c('about.hero_image_alt')}
             className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="relative z-20 text-center px-4">
@@ -35,7 +38,7 @@ export default function About() {
                 transition={{ duration: 1, delay: 0.2 }}
                 className="text-5xl md:text-7xl font-serif text-white mb-4"
             >
-                The Art of Timelessness
+                {c('about.hero_title')}
             </motion.h1>
             <motion.p 
                 initial={{ opacity: 0 }}
@@ -43,7 +46,7 @@ export default function About() {
                 transition={{ duration: 1, delay: 0.5 }}
                 className="text-white/90 text-sm tracking-[0.2em] uppercase"
             >
-                Est. 2026
+                {c('about.hero_eyebrow')}
             </motion.p>
         </div>
       </section>
@@ -60,9 +63,9 @@ export default function About() {
                 transition={{ duration: 0.8 }}
                 className="relative h-[500px] bg-gray-200"
             >
-                <img 
-                    src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=1000&auto=format&fit=crop" 
-                    alt="Craftsmanship process" 
+                <img
+                    src={c('about.story_image')}
+                    alt={c('about.story_image_alt')}
                     className="w-full h-full object-cover"
                 />
             </motion.div>
@@ -76,14 +79,14 @@ export default function About() {
                 className="space-y-8"
             >
                 <motion.h2 variants={fadeInUp} className="text-4xl font-serif text-gray-900">
-                    Heritage & Quality
+                    {c('about.story_heading')}
                 </motion.h2>
                 <motion.div variants={fadeInUp} className="w-12 h-1 bg-black" />
                 <motion.p variants={fadeInUp} className="text-gray-600 leading-relaxed">
-                    Founded on the principles of classic elegance and modern sensibility, Tehila Levi is more than a jewelry brand; it is a celebration of enduring beauty. Every piece is a testament to the meticulous art of jewelry making, designed not just for today, but to be cherished for generations.
+                    {c('about.story_body1')}
                 </motion.p>
                 <motion.p variants={fadeInUp} className="text-gray-600 leading-relaxed">
-                    We believe in slow fashion—creating fewer, better things. Our ateliers employ traditional techniques passed down through decades, ensuring that each curve, setting, and polish meets our exacting standards of perfection.
+                    {c('about.story_body2')}
                 </motion.p>
             </motion.div>
         </div>
@@ -99,35 +102,17 @@ export default function About() {
                 variants={staggerContainer}
                 className="grid grid-cols-1 md:grid-cols-3 gap-12"
             >
-                <motion.div variants={fadeInUp} className="space-y-4">
-                    <div className="w-12 h-12 border border-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span className="font-serif text-xl">01</span>
-                    </div>
-                    <h3 className="text-lg font-serif">Ethically Sourced</h3>
-                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
-                        We are committed to using only conflict-free diamonds and recycled precious metals.
-                    </p>
-                </motion.div>
-
-                <motion.div variants={fadeInUp} className="space-y-4">
-                    <div className="w-12 h-12 border border-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span className="font-serif text-xl">02</span>
-                    </div>
-                    <h3 className="text-lg font-serif">Hand-Crafted</h3>
-                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
-                        Each piece is finished by hand in our Los Angeles studio by master jewelers.
-                    </p>
-                </motion.div>
-
-                <motion.div variants={fadeInUp} className="space-y-4">
-                    <div className="w-12 h-12 border border-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span className="font-serif text-xl">03</span>
-                    </div>
-                    <h3 className="text-lg font-serif">Lifetime Warranty</h3>
-                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
-                        We stand behind the quality of our jewelry with a comprehensive lifetime guarantee.
-                    </p>
-                </motion.div>
+                {[1, 2, 3].map((n) => (
+                    <motion.div key={n} variants={fadeInUp} className="space-y-4">
+                        <div className="w-12 h-12 border border-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="font-serif text-xl">{c(`about.pillar${n}.badge`)}</span>
+                        </div>
+                        <h3 className="text-lg font-serif">{c(`about.pillar${n}.title`)}</h3>
+                        <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                            {c(`about.pillar${n}.body`)}
+                        </p>
+                    </motion.div>
+                ))}
             </motion.div>
         </div>
       </section>

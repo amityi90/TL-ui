@@ -1,5 +1,6 @@
 // src/components/Footer.jsx
 import React from 'react';
+import { useContent } from '../context/ContentContext';
 
 // Only links that actually go somewhere. The previous footer carried a Support
 // column, a newsletter form and social icons that were all inert placeholders.
@@ -10,6 +11,8 @@ const links = [
 ];
 
 const Footer = ({ onNavClick }) => {
+    const { c } = useContent();
+
     return (
         <footer className="bg-gray-50 border-t border-gray-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -18,7 +21,7 @@ const Footer = ({ onNavClick }) => {
                         onClick={() => onNavClick('home')}
                         className="font-serif text-xl tracking-widest uppercase text-gray-900 hover:opacity-60 transition-opacity"
                     >
-                        Tehila Levi
+                        {c('footer.brand')}
                     </button>
 
                     {/* Matches the Navbar's link treatment so the two read as one system */}
@@ -37,7 +40,7 @@ const Footer = ({ onNavClick }) => {
 
                 <div className="border-t border-gray-200 mt-10 pt-8 text-center md:text-left">
                     <p className="text-sm text-gray-400">
-                        &copy; {new Date().getFullYear()} Tehila Levi. All rights reserved.
+                        &copy; {new Date().getFullYear()} {c('footer.brand')}. {c('footer.rights')}
                     </p>
                 </div>
             </div>

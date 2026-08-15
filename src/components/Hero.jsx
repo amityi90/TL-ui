@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useContent } from "../context/ContentContext";
 
 export default function Hero() {
+  const { c } = useContent();
+
   return (
     <section className="relative h-screen w-full overflow-hidden bg-black">
       {/* 1. The Image with Ken Burns Effect */}
@@ -16,8 +19,8 @@ export default function Hero() {
         }}
       >
         <img
-          src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=2515&auto=format&fit=crop"
-          alt="Diamond Ring Close up"
+          src={c('hero.image')}
+          alt={c('hero.image_alt')}
           className="w-full h-full object-cover opacity-90"
         />
       </motion.div>
@@ -35,7 +38,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-xs md:text-sm tracking-[0.3em] font-medium uppercase mb-6"
         >
-          Established 2026
+          {c('hero.eyebrow')}
         </motion.p>
 
         {/* Main Heading */}
@@ -46,7 +49,7 @@ export default function Hero() {
           className="text-5xl md:text-7xl lg:text-8xl font-serif mb-10 tracking-tight"
           style={{ fontFamily: '"Playfair Display", serif' }}
         >
-          The Signature Series
+          {c('hero.title')}
         </motion.h1>
 
         {/* Minimalist Button */}
@@ -56,7 +59,7 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.8 }}
         >
           <button className="group relative text-sm tracking-[0.2em] uppercase py-2 border-b border-white/70 hover:border-white transition-colors duration-300">
-            Shop the Collection
+            {c('hero.cta')}
             <span className="absolute -bottom-px left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
           </button>
         </motion.div>

@@ -8,10 +8,12 @@ import CartPage from './components/CartPage';
 import About from './components/About';
 import Contact from './components/Contact';
 import { CartProvider } from './context/CartContext';
+import { ContentProvider, useContent } from './context/ContentContext';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function Store() {
+  const { c } = useContent();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -76,10 +78,10 @@ function Store() {
                   <section className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                       <div className="text-center max-w-2xl mx-auto mb-16">
-                          <h2 className="text-3xl md:text-4xl font-serif mb-4">Latest Arrivals</h2>
+                          <h2 className="text-3xl md:text-4xl font-serif mb-4">{c('collections.heading')}</h2>
                           <div className="h-1 w-20 bg-black mx-auto mb-6"></div>
                           <p className="text-gray-500">
-                              Discover our curated selection of premium goods, designed for the modern connoisseur.
+                              {c('collections.body')}
                           </p>
                       </div>
 
@@ -122,9 +124,11 @@ function Store() {
 
 function App() {
   return (
-    <CartProvider>
-      <Store />
-    </CartProvider>
+    <ContentProvider apiUrl={apiUrl}>
+      <CartProvider>
+        <Store />
+      </CartProvider>
+    </ContentProvider>
   );
 }
 
