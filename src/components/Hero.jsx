@@ -5,7 +5,7 @@ export default function Hero() {
   const { c } = useContent();
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-black">
+    <section className="relative h-screen w-full overflow-hidden bg-void">
       {/* 1. The Image with Ken Burns Effect */}
       <motion.div
         className="absolute inset-0 z-0"
@@ -26,10 +26,12 @@ export default function Hero() {
       </motion.div>
 
       {/* 2. Elegant Overlay */}
-      <div className="absolute inset-0 bg-black/15 z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-void/35 z-10 pointer-events-none" />
+      {/* Melts the hero image into the starfield below it. */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-void z-10 pointer-events-none" />
 
       {/* 3. Center Content */}
-      <div className="relative z-20 h-full flex flex-col items-center justify-center text-center text-white px-4">
+      <div className="relative z-20 h-full flex flex-col items-center justify-center text-center text-ink px-4">
         
         {/* Subtitle */}
         <motion.p
@@ -58,9 +60,9 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.8 }}
         >
-          <button className="group relative text-sm tracking-[0.2em] uppercase py-2 border-b border-white/70 hover:border-white transition-colors duration-300">
+          <button className="group relative text-sm tracking-[0.2em] uppercase py-2 border-b border-gold/60 hover:border-gold transition-colors duration-300">
             {c('hero.cta')}
-            <span className="absolute -bottom-px left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute -bottom-px left-0 w-0 h-px bg-gold transition-all duration-300 group-hover:w-full"></span>
           </button>
         </motion.div>
       </div>

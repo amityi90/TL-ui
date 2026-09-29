@@ -1,2 +1,102 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* Tailwind v4 reads its palette from here, not tailwind.config.js. Each token
+   below becomes bg-*, text-* and border-* utilities.
+
+   Surfaces get lighter as they come forward: void (the sky) sits furthest back,
+   then surface, raised, overlay. Nothing is pure black, so the product photos --
+   which are themselves shot on near-black -- still separate from the page. */
+@theme {
+  --color-void: #060609;
+  --color-surface: #0b0b11;
+  --color-raised: #12121a;
+  --color-overlay: #16161f;
+  --color-hairline: #24242f;
+  --color-hairline-strong: #343442;
+
+  --color-gold: #d4af37;
+  --color-gold-soft: #e7ca6e;
+  --color-gold-dim: #6f5d23;
+
+  --color-ink: #f2efe9;
+  --color-ink-muted: #a8a49b;
+  --color-ink-faint: #6f6b63;
+}
+
+:root {
+  /* Native controls -- select menus, scrollbars, autofill -- follow this.
+     Without it the country dropdown opens as a white sheet on a black page. */
+  color-scheme: dark;
+}
+
+html {
+  /* Painted before React mounts, so there is no white flash on first load. */
+  background-color: #060609;
+}
+
+body {
+  background-color: transparent;
+  color: var(--color-ink);
+}
+
+/* --- The sky -------------------------------------------------------------
+   Two fixed layers behind all content. Fixed rather than scrolling, so content
+   drifts across a still starfield instead of dragging it along.
+
+   ::before is the nebula wash and vignette; ::after is the stars. They are
+   split because the nebula must not repeat while the stars must, and keeping
+   them in one background-image list would mean two fragile parallel lists. */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: #060609;
+  background-image:
+    radial-gradient(58% 44% at 15% 8%, rgba(86, 76, 150, 0.16), transparent 72%),
+    radial-gradient(52% 40% at 85% 82%, rgba(150, 118, 58, 0.11), transparent 72%),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Three star layers tiling at 400/290/190px. The sizes are co-prime enough that
+   the repeat is not legible at viewport scale. Deliberately faint -- this is
+   atmosphere, and must never compete with the jewelry. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-image:
+    radial-gradient(1.5px 1.5px at 38px 62px,   rgba(255, 255, 255, 0.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 287px 23px,  rgba(255, 255, 255, 0.30), transparent 60%),
+    radial-gradient(1.5px 1.5px at 151px 244px, rgba(255, 255, 255, 0.38), transparent 60%),
+    radial-gradient(1.5px 1.5px at 355px 331px, rgba(255, 255, 255, 0.26), transparent 60%),
+    radial-gradient(1.2px 1.2px at 15px 121px,  rgba(255, 255, 255, 0.26), transparent 60%),
+    radial-gradient(1.2px 1.2px at 132px 46px,  rgba(214, 222, 255, 0.30), transparent 60%),
+    radial-gradient(1.2px 1.2px at 221px 198px, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(1.2px 1.2px at 63px 249px,  rgba(255, 240, 214, 0.28), transparent 60%),
+    radial-gradient(1px 1px at 27px 33px,       rgba(255, 255, 255, 0.18), transparent 60%),
+    radial-gradient(1px 1px at 119px 87px,      rgba(255, 255, 255, 0.14), transparent 60%),
+    radial-gradient(1px 1px at 74px 156px,      rgba(255, 255, 255, 0.16), transparent 60%),
+    radial-gradient(1px 1px at 165px 122px,     rgba(255, 255, 255, 0.12), transparent 60%);
+  background-size:
+    400px 400px, 400px 400px, 400px 400px, 400px 400px,
+    290px 290px, 290px 290px, 290px 290px, 290px 290px,
+    190px 190px, 190px 190px, 190px 190px, 190px 190px;
+}
+
+/* Scrollbars, so the browser chrome does not stay light against the sky. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0b0b11; }
+::-webkit-scrollbar-thumb { background: #24242f; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #343442; }
+
+/* Referenced by ProductDrawer's details column but never defined until now, so
+   the drawer has always shown a scrollbar the author meant to hide. */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

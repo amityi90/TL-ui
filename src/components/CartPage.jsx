@@ -28,36 +28,47 @@ const COUNTRIES = [
   { code: 'SG', name: 'Singapore' }
 ];
 
-// Tuned to the site's monochrome look; replaces the old per-element cardStyle.
+// Stripe renders the payment fields in an iframe, so site CSS cannot reach them.
+// This palette is hand-kept in step with the tokens in src/index.css -- without
+// it the Payment Element stays a white card sitting on the dark page.
 const appearance = {
-  theme: 'flat',
+  theme: 'night',
   variables: {
-    colorPrimary: '#000000',
-    colorBackground: '#ffffff',
-    colorText: '#111827',
-    colorDanger: '#ef4444',
+    colorPrimary: '#d4af37',
+    colorBackground: '#12121a',
+    colorText: '#f2efe9',
+    colorTextSecondary: '#a8a49b',
+    colorTextPlaceholder: '#6f6b63',
+    colorDanger: '#f87171',
     fontFamily: 'ui-sans-serif, system-ui, sans-serif',
     fontSizeBase: '15px',
     spacingUnit: '4px',
     borderRadius: '0px'
   },
   rules: {
-    '.Input': { border: '0', borderBottom: '1px solid #d1d5db', padding: '8px 0', boxShadow: 'none' },
-    '.Input:focus': { borderBottom: '1px solid #000000', boxShadow: 'none', outline: 'none' },
+    '.Input': {
+      backgroundColor: 'transparent',
+      border: '0',
+      borderBottom: '1px solid #24242f',
+      padding: '8px 0',
+      boxShadow: 'none'
+    },
+    '.Input:focus': { borderBottom: '1px solid #d4af37', boxShadow: 'none', outline: 'none' },
     '.Label': {
       fontSize: '12px',
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
-      color: '#6b7280'
+      color: '#6f6b63'
     },
-    '.Tab': { border: '1px solid #e5e7eb', boxShadow: 'none' },
-    '.Tab--selected': { border: '1px solid #000000', color: '#000000' }
+    '.Tab': { backgroundColor: '#12121a', border: '1px solid #24242f', boxShadow: 'none' },
+    '.Tab:hover': { color: '#f2efe9' },
+    '.Tab--selected': { border: '1px solid #d4af37', color: '#d4af37' }
   }
 };
 
 const inputClass =
-  'w-full border-b border-gray-300 focus:border-black py-2 outline-none transition-colors bg-transparent placeholder-gray-300 disabled:opacity-50';
-const labelClass = 'text-xs text-gray-500 uppercase tracking-wider';
+  'w-full border-b border-hairline focus:border-gold py-2 outline-none transition-colors bg-transparent text-ink placeholder-ink-faint disabled:opacity-50';
+const labelClass = 'text-xs text-ink-faint uppercase tracking-wider';
 
 function CheckoutForm({ onClose, apiUrl }) {
   const stripe = useStripe();
@@ -224,19 +235,19 @@ function CheckoutForm({ onClose, apiUrl }) {
   if (success) {
     return (
       <div className="max-w-lg mx-auto text-center py-20">
-        <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-8">
-          <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-8">
+          <svg className="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <h2 className="text-3xl font-serif mb-4">Thank You</h2>
-        <p className="text-gray-500 mb-2">Your payment was received and your order is confirmed.</p>
-        <p className="text-sm text-gray-500 mb-10">
-          Order number <span className="font-medium text-black">#{success.orderId}</span>
+        <p className="text-ink-muted mb-2">Your payment was received and your order is confirmed.</p>
+        <p className="text-sm text-ink-muted mb-10">
+          Order number <span className="font-medium text-gold">#{success.orderId}</span>
         </p>
         <button
           onClick={onClose}
-          className="border-b border-black uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
         >
           Continue Shopping
         </button>
@@ -249,25 +260,25 @@ function CheckoutForm({ onClose, apiUrl }) {
       <div className="flex-1 space-y-12">
         {/* 1. Review Items */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
             1. Shopping Bag ({cart.length})
           </h2>
           <div className="space-y-6 max-h-60 overflow-y-auto pr-2">
             {cart.map((item) => (
               <div key={item.id} className="flex gap-4 items-center">
-                <div className="w-16 h-20 bg-gray-100 shrink-0">
+                <div className="w-16 h-20 bg-surface shrink-0">
                   <img src={item.images?.[0]} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-serif">{item.name}</h3>
-                  <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                  <p className="text-xs text-ink-muted">Qty: {item.quantity}</p>
                 </div>
                 <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
                 <button
                   type="button"
                   onClick={() => removeFromCart(item.id)}
                   disabled={isProcessing}
-                  className="text-gray-400 hover:text-red-500 disabled:opacity-40"
+                  className="text-ink-faint hover:text-red-400 disabled:opacity-40"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -280,7 +291,7 @@ function CheckoutForm({ onClose, apiUrl }) {
 
         {/* 2. Shipping Address */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
             2. Shipping Address
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -328,7 +339,7 @@ function CheckoutForm({ onClose, apiUrl }) {
 
         {/* 3. Payment */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
             3. Payment Details
           </h2>
           <div className="max-w-md">
@@ -339,38 +350,38 @@ function CheckoutForm({ onClose, apiUrl }) {
 
       {/* Order Summary */}
       <div className="lg:w-96 shrink-0">
-        <div className="bg-gray-50 p-8 sticky top-24">
-          <h2 className="text-lg font-bold uppercase tracking-widest mb-6 border-b border-gray-200 pb-4">
+        <div className="bg-raised/70 backdrop-blur-sm border border-hairline p-8 sticky top-24">
+          <h2 className="text-lg font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-4">
             Order Summary
           </h2>
 
-          <div className="space-y-4 text-sm text-gray-600 mb-8">
+          <div className="space-y-4 text-sm text-ink-muted mb-8">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span className="text-black font-medium">Complimentary</span>
+              <span className="text-ink font-medium">Complimentary</span>
             </div>
-            <div className="flex justify-between font-medium text-black text-xl pt-4 border-t border-gray-200 mt-4">
+            <div className="flex justify-between font-medium text-gold text-xl pt-4 border-t border-hairline mt-4">
               <span>Total</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
           </div>
 
           {errorMessage && (
-            <div className="text-red-600 text-sm mb-4 bg-red-50 border border-red-100 p-3">{errorMessage}</div>
+            <div className="text-red-300 text-sm mb-4 bg-red-500/10 border border-red-500/30 p-3">{errorMessage}</div>
           )}
 
           <button
             type="submit"
             disabled={!stripe || isProcessing}
-            className="w-full bg-black text-white text-sm uppercase tracking-[0.2em] py-4 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-300"
+            className="w-full bg-gold text-void font-medium text-sm uppercase tracking-[0.2em] py-4 hover:bg-gold-soft disabled:bg-gold-dim disabled:text-ink-faint disabled:cursor-not-allowed transition-all duration-300"
           >
             {isProcessing ? 'Processing…' : 'Complete Purchase'}
           </button>
-          <p className="text-xs text-center text-gray-400 mt-4 flex items-center justify-center gap-1">
+          <p className="text-xs text-center text-ink-faint mt-4 flex items-center justify-center gap-1">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -385,10 +396,10 @@ function CheckoutForm({ onClose, apiUrl }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-void/80 backdrop-blur-sm flex items-center justify-center"
           >
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="w-12 h-12 border-4 border-hairline border-t-gold rounded-full animate-spin mx-auto mb-4"></div>
               <h3 className="text-xl font-serif">Processing Secure Payment…</h3>
             </div>
           </motion.div>
@@ -405,10 +416,10 @@ export default function CartPage({ onClose, apiUrl }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
         <h2 className="text-3xl font-serif mb-4">Your Cart is Empty</h2>
-        <p className="text-gray-500 mb-8">Looks like you haven't added any luxury items yet.</p>
+        <p className="text-ink-muted mb-8">Looks like you haven't added any luxury items yet.</p>
         <button
           onClick={onClose}
-          className="border-b border-black uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
         >
           Return to Shop
         </button>
@@ -420,12 +431,12 @@ export default function CartPage({ onClose, apiUrl }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
         <h2 className="text-3xl font-serif mb-4">Checkout Unavailable</h2>
-        <p className="text-gray-500 mb-8">
+        <p className="text-ink-muted mb-8">
           Payments are not configured. Please try again shortly.
         </p>
         <button
           onClick={onClose}
-          className="border-b border-black uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
         >
           Return to Shop
         </button>

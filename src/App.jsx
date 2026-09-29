@@ -75,12 +75,12 @@ function Store() {
                 <>
                 <Hero />
                 <main className="flex-grow" id="collections">
-                  <section className="py-20 bg-gray-50">
+                  <section className="py-20">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                       <div className="text-center max-w-2xl mx-auto mb-16">
                           <h2 className="text-3xl md:text-4xl font-serif mb-4">{c('collections.heading')}</h2>
-                          <div className="h-1 w-20 bg-black mx-auto mb-6"></div>
-                          <p className="text-gray-500">
+                          <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
+                          <p className="text-ink-muted">
                               {c('collections.body')}
                           </p>
                       </div>
@@ -103,7 +103,7 @@ function Store() {
   };
 
   return (
-    <div className="font-sans antialiased text-gray-900 bg-white flex flex-col min-h-screen">
+    <div className="font-sans antialiased text-ink bg-transparent flex flex-col min-h-screen">
       <Navbar 
         onCartClick={() => handleNavClick(currentView === 'cart' ? 'home' : 'cart')}
         onNavClick={handleNavClick}

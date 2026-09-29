@@ -16,8 +16,8 @@ export default function Navbar({ onCartClick, onNavClick }) {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out px-6 md:px-12 py-5 flex justify-between items-center ${
         isScrolled
-          ? "bg-white/90 backdrop-blur-md text-gray-900 shadow-sm"
-          : "bg-transparent text-white mix-blend-difference"
+          ? "bg-void/80 backdrop-blur-md text-ink border-b border-hairline"
+          : "bg-transparent text-ink"
       }`}
     >
       {/* Brand Logo */}
@@ -49,7 +49,7 @@ export default function Navbar({ onCartClick, onNavClick }) {
         >
             Cart 
             {totalItems > 0 && (
-                <span className="w-5 h-5 flex items-center justify-center bg-black text-white rounded-full text-[10px] leading-none">
+                <span className="w-5 h-5 flex items-center justify-center bg-gold text-void rounded-full text-[10px] leading-none">
                     {totalItems}
                 </span>
             )}
@@ -64,7 +64,7 @@ export default function Navbar({ onCartClick, onNavClick }) {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="fixed top-20 right-6 md:right-12 z-[100] bg-black text-white px-6 py-3 text-xs uppercase tracking-widest shadow-lg"
+                className="fixed top-20 right-6 md:right-12 z-[100] bg-raised text-ink border border-gold/30 px-6 py-3 text-xs uppercase tracking-widest shadow-lg"
             >
                 Item Added to Cart
             </motion.div>

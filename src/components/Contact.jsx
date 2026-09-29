@@ -34,7 +34,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen pt-32 pb-20">
+    <div className="min-h-screen pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <motion.div 
@@ -44,7 +44,7 @@ export default function Contact() {
             className="text-center mb-20"
         >
             <h1 className="text-4xl md:text-5xl font-serif mb-4">{c('contact.heading')}</h1>
-            <p className="text-gray-500 text-sm tracking-[0.2em] uppercase">{c('contact.subtitle')}</p>
+            <p className="text-ink-muted text-sm tracking-[0.2em] uppercase">{c('contact.subtitle')}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
@@ -58,32 +58,32 @@ export default function Contact() {
             >
                 <div>
                     <h2 className="text-2xl font-serif mb-6">{c('contact.boutique_heading')}</h2>
-                    <p className="text-gray-600 mb-2">{c('contact.address_line1')}</p>
-                    <p className="text-gray-600 mb-4">{c('contact.address_line2')}</p>
-                    <a href={`tel:${c('contact.phone_tel')}`} className="text-black border-b border-black text-sm uppercase tracking-widest pb-1 hover:opacity-60 transition-opacity">
+                    <p className="text-ink-muted mb-2">{c('contact.address_line1')}</p>
+                    <p className="text-ink-muted mb-4">{c('contact.address_line2')}</p>
+                    <a href={`tel:${c('contact.phone_tel')}`} className="text-gold border-b border-gold text-sm uppercase tracking-widest pb-1 hover:opacity-60 transition-opacity">
                         {c('contact.phone_display')}
                     </a>
                 </div>
 
-                <div className="aspect-video w-full bg-gray-200 grayscale opacity-80 relative overflow-hidden">
+                <div className="aspect-video w-full bg-surface grayscale opacity-60 relative overflow-hidden">
                     <img
                         src={c('contact.map_image')}
                         alt={c('contact.map_image_alt')}
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="absolute inset-0 flex items-center justify-center bg-void/40">
                         {/* A real link once a map URL is set; an inert badge until then. */}
                         {mapUrl ? (
                             <a
                                 href={mapUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-white px-4 py-2 text-xs uppercase tracking-widest shadow-lg hover:opacity-80 transition-opacity"
+                                className="bg-raised text-ink border border-hairline px-4 py-2 text-xs uppercase tracking-widest shadow-lg hover:border-gold transition-colors"
                             >
                                 {c('contact.map_label')}
                             </a>
                         ) : (
-                            <span className="bg-white px-4 py-2 text-xs uppercase tracking-widest shadow-lg">
+                            <span className="bg-raised text-ink border border-hairline px-4 py-2 text-xs uppercase tracking-widest shadow-lg">
                                 {c('contact.map_label')}
                             </span>
                         )}
@@ -92,7 +92,7 @@ export default function Contact() {
 
                 <div>
                     <h3 className="text-sm font-bold uppercase tracking-widest mb-4">{c('contact.hours_heading')}</h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 max-w-xs">
+                    <div className="grid grid-cols-2 gap-4 text-sm text-ink-muted max-w-xs">
                         {hoursRows.map((row, i) => (
                             <React.Fragment key={i}>
                                 <span>{row.label}</span>
@@ -113,36 +113,36 @@ export default function Contact() {
                 <form onSubmit={handleSubmit} className="space-y-8">
                     
                     <div className="space-y-1">
-                        <label className="text-xs text-gray-400 uppercase tracking-wider">{c('contact.form_label_name')}</label>
+                        <label className="text-xs text-ink-faint uppercase tracking-wider">{c('contact.form_label_name')}</label>
                         <input 
                             type="text" 
                             name="name"
                             required
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors"
+                            className="w-full bg-transparent border-b border-hairline py-2 focus:border-gold text-ink outline-none transition-colors"
                         />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs text-gray-400 uppercase tracking-wider">{c('contact.form_label_email')}</label>
+                        <label className="text-xs text-ink-faint uppercase tracking-wider">{c('contact.form_label_email')}</label>
                         <input 
                             type="email" 
                             name="email"
                             required
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors"
+                            className="w-full bg-transparent border-b border-hairline py-2 focus:border-gold text-ink outline-none transition-colors"
                         />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs text-gray-400 uppercase tracking-wider">{c('contact.form_label_subject')}</label>
+                        <label className="text-xs text-ink-faint uppercase tracking-wider">{c('contact.form_label_subject')}</label>
                         <select 
                             name="subject"
                             value={formData.subject}
                             onChange={handleChange}
-                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors appearance-none"
+                            className="w-full bg-transparent border-b border-hairline py-2 focus:border-gold text-ink outline-none transition-colors appearance-none"
                         >
                             {subjectOptions.map((option) => (
                                 <option key={option}>{option}</option>
@@ -151,20 +151,20 @@ export default function Contact() {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs text-gray-400 uppercase tracking-wider">{c('contact.form_label_message')}</label>
+                        <label className="text-xs text-ink-faint uppercase tracking-wider">{c('contact.form_label_message')}</label>
                         <textarea 
                             name="message"
                             required
                             rows="4"
                             value={formData.message}
                             onChange={handleChange}
-                            className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-black outline-none transition-colors resize-none"
+                            className="w-full bg-transparent border-b border-hairline py-2 focus:border-gold text-ink outline-none transition-colors resize-none"
                         ></textarea>
                     </div>
 
                     <button 
                         type="submit"
-                        className="w-full bg-black text-white text-sm uppercase tracking-[0.2em] py-4 hover:bg-gray-800 transition-colors duration-500"
+                        className="w-full bg-gold text-void font-medium text-sm uppercase tracking-[0.2em] py-4 hover:bg-gold-soft transition-colors duration-500"
                     >
                         {c('contact.form_submit')}
                     </button>

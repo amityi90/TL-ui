@@ -21,11 +21,11 @@ export default function About() {
   const { c } = useContent();
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen pt-20">
+    <div className="min-h-screen pt-20">
       
       {/* Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/20 z-10" />
+        <div className="absolute inset-0 bg-void/50 z-10" />
         <img
             src={c('about.hero_image')}
             alt={c('about.hero_image_alt')}
@@ -36,7 +36,7 @@ export default function About() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="text-5xl md:text-7xl font-serif text-white mb-4"
+                className="text-5xl md:text-7xl font-serif text-ink mb-4"
             >
                 {c('about.hero_title')}
             </motion.h1>
@@ -44,7 +44,7 @@ export default function About() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.5 }}
-                className="text-white/90 text-sm tracking-[0.2em] uppercase"
+                className="text-ink/80 text-sm tracking-[0.2em] uppercase"
             >
                 {c('about.hero_eyebrow')}
             </motion.p>
@@ -61,7 +61,7 @@ export default function About() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative h-[500px] bg-gray-200"
+                className="relative h-[500px] bg-surface"
             >
                 <img
                     src={c('about.story_image')}
@@ -78,14 +78,14 @@ export default function About() {
                 variants={staggerContainer}
                 className="space-y-8"
             >
-                <motion.h2 variants={fadeInUp} className="text-4xl font-serif text-gray-900">
+                <motion.h2 variants={fadeInUp} className="text-4xl font-serif text-ink">
                     {c('about.story_heading')}
                 </motion.h2>
-                <motion.div variants={fadeInUp} className="w-12 h-1 bg-black" />
-                <motion.p variants={fadeInUp} className="text-gray-600 leading-relaxed">
+                <motion.div variants={fadeInUp} className="w-12 h-1 bg-gold" />
+                <motion.p variants={fadeInUp} className="text-ink-muted leading-relaxed">
                     {c('about.story_body1')}
                 </motion.p>
-                <motion.p variants={fadeInUp} className="text-gray-600 leading-relaxed">
+                <motion.p variants={fadeInUp} className="text-ink-muted leading-relaxed">
                     {c('about.story_body2')}
                 </motion.p>
             </motion.div>
@@ -93,7 +93,7 @@ export default function About() {
       </section>
 
       {/* Values / Promise */}
-      <section className="bg-white py-24 border-t border-gray-100">
+      <section className="bg-surface/50 py-24 border-t border-hairline">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div 
                 initial="hidden"
@@ -104,11 +104,11 @@ export default function About() {
             >
                 {[1, 2, 3].map((n) => (
                     <motion.div key={n} variants={fadeInUp} className="space-y-4">
-                        <div className="w-12 h-12 border border-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <span className="font-serif text-xl">{c(`about.pillar${n}.badge`)}</span>
+                        <div className="w-12 h-12 border border-gold rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="font-serif text-xl text-gold">{c(`about.pillar${n}.badge`)}</span>
                         </div>
-                        <h3 className="text-lg font-serif">{c(`about.pillar${n}.title`)}</h3>
-                        <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                        <h3 className="text-lg font-serif text-ink">{c(`about.pillar${n}.title`)}</h3>
+                        <p className="text-sm text-ink-muted max-w-xs mx-auto">
                             {c(`about.pillar${n}.body`)}
                         </p>
                     </motion.div>

@@ -14,18 +14,18 @@ const Footer = ({ onNavClick }) => {
     const { c } = useContent();
 
     return (
-        <footer className="bg-gray-50 border-t border-gray-200">
+        <footer className="bg-transparent border-t border-hairline">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                     <button
                         onClick={() => onNavClick('home')}
-                        className="font-serif text-xl tracking-widest uppercase text-gray-900 hover:opacity-60 transition-opacity"
+                        className="font-serif text-xl tracking-widest uppercase text-ink hover:text-gold transition-opacity"
                     >
                         {c('footer.brand')}
                     </button>
 
                     {/* Matches the Navbar's link treatment so the two read as one system */}
-                    <nav className="flex gap-8 text-xs font-bold tracking-[0.15em] uppercase text-gray-900">
+                    <nav className="flex gap-8 text-xs font-bold tracking-[0.15em] uppercase text-ink">
                         {links.map(({ label, view }) => (
                             <button
                                 key={view}
@@ -38,8 +38,8 @@ const Footer = ({ onNavClick }) => {
                     </nav>
                 </div>
 
-                <div className="border-t border-gray-200 mt-10 pt-8 text-center md:text-left">
-                    <p className="text-sm text-gray-400">
+                <div className="border-t border-hairline mt-10 pt-8 text-center md:text-left">
+                    <p className="text-sm text-ink-faint">
                         &copy; {new Date().getFullYear()} {c('footer.brand')}. {c('footer.rights')}
                     </p>
                 </div>
