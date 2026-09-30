@@ -25,6 +25,18 @@ export default function Hero() {
   // the Ken Burns drift. This opts it out explicitly.
   const reduceMotion = useReducedMotion();
 
+  // The target is the <main id="collections"> wrapper in App.jsx. Scrolling to
+  // the element rather than a fixed offset keeps this correct if the hero's
+  // height changes. The section's own top padding clears the fixed navbar.
+  // scrollIntoView's smooth behaviour is a JS option, so the CSS
+  // reduced-motion rule does not apply to it either.
+  const scrollToCollections = () => {
+    document.getElementById('collections')?.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start'
+    });
+  };
+
   return (
     <section className="relative h-screen w-full overflow-hidden bg-velvet">
       {/* 1. Image, drifting slowly */}
@@ -108,7 +120,9 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 0.9 }}
         >
-          <button className="btn-gold">{c('hero.cta')}</button>
+          <button onClick={scrollToCollections} className="btn-gold">
+            {c('hero.cta')}
+          </button>
         </motion.div>
       </div>
     </section>
