@@ -1,52 +1,80 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
 
-/* Tailwind v4 reads its palette from here, not tailwind.config.js. Each token
-   below becomes bg-*, text-* and border-* utilities.
+/* ---------------------------------------------------------------------------
+   Tehila Levi -- "private gallery at night".
 
-   Surfaces get lighter as they come forward: void (the sky) sits furthest back,
-   then surface, raised, overlay. Nothing is pure black, so the product photos --
-   which are themselves shot on near-black -- still separate from the page. */
+   Tailwind v4 reads its palette from @theme here, not from tailwind.config.js
+   (v4 does not auto-load that file), so this stylesheet is the single source of
+   truth for the design.
+
+   The palette is taken from the product photography: jewelry on black velvet
+   under one warm light. Three blacks, not one -- see the comment on --color-velvet.
+--------------------------------------------------------------------------- */
+
 @theme {
-  --color-void: #060609;
-  --color-surface: #0b0b11;
-  --color-raised: #12121a;
-  --color-overlay: #16161f;
-  --color-hairline: #24242f;
-  --color-hairline-strong: #343442;
+  /* Page. */
+  --color-night: #0a0a0b;
+  /* Behind product imagery only. The photos are cut on near-pure black, so a
+     lighter surface behind one shows the photo as a visible rectangle -- which
+     is exactly what "photo on black, no heavy box" must avoid. */
+  --color-velvet: #060606;
+  /* Raised panels: drawer, order summary, toast. Never behind a product photo. */
+  --color-panel: #121214;
 
-  --color-gold: #d4af37;
-  --color-gold-soft: #e7ca6e;
-  --color-gold-dim: #6f5d23;
+  --color-gold: #c9a96e;
+  --color-gold-hi: #e0c48f;
+  --color-gold-deep: #8a6f3e;
 
-  --color-ink: #f2efe9;
-  --color-ink-muted: #a8a49b;
-  --color-ink-faint: #6f6b63;
+  --color-ivory: #ece6da;
+  --color-muted: #9c968c;
+  --color-faint: #6b665e;
+
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   /* Native controls -- select menus, scrollbars, autofill -- follow this.
-     Without it the country dropdown opens as a white sheet on a black page. */
+     Without it the checkout country dropdown opens as a white sheet. */
   color-scheme: dark;
 }
 
 html {
-  /* Painted before React mounts, so there is no white flash on first load. */
-  background-color: #060609;
+  /* Painted before React mounts, so there is no light flash on first load. */
+  background-color: #0a0a0b;
 }
 
 body {
   background-color: transparent;
-  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  color: var(--color-muted);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- The sky -------------------------------------------------------------
-   Two fixed layers behind all content. Fixed rather than scrolling, so content
-   drifts across a still starfield instead of dragging it along.
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  color: var(--color-ivory);
+}
 
-   ::before is the nebula wash and vignette; ::after is the stars. They are
-   split because the nebula must not repeat while the stars must, and keeping
-   them in one background-image list would mean two fragile parallel lists. */
+::selection {
+  background: rgba(201, 169, 110, 0.3);
+  color: var(--color-ivory);
+}
+
+/* --- Atmosphere ------------------------------------------------------------
+   Two fixed layers behind everything. Both are inert to pointers.
+
+   ::before is the velvet grain -- a tiny SVG noise tile at ~4%, which is what
+   stops a flat hex fill from reading as "dark mode" instead of fabric.
+   ::after is the warm spotlight plus the vignette falling off to black at the
+   edges, mirroring how the light behaves in the product photos.
+
+   No global starfield: the brief puts stars in the hero, and scattering them
+   site-wide is what tips this from "gallery at night" into "sci-fi".
+--------------------------------------------------------------------------- */
 
 body::before {
   content: "";
@@ -54,49 +82,130 @@ body::before {
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  background-color: #060609;
-  background-image:
-    radial-gradient(58% 44% at 15% 8%, rgba(86, 76, 150, 0.16), transparent 72%),
-    radial-gradient(52% 40% at 85% 82%, rgba(150, 118, 58, 0.11), transparent 72%),
-    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }
 
-/* Three star layers tiling at 400/290/190px. The sizes are co-prime enough that
-   the repeat is not legible at viewport scale. Deliberately faint -- this is
-   atmosphere, and must never compete with the jewelry. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-repeat: repeat;
   background-image:
-    radial-gradient(1.5px 1.5px at 38px 62px,   rgba(255, 255, 255, 0.45), transparent 60%),
-    radial-gradient(1.5px 1.5px at 287px 23px,  rgba(255, 255, 255, 0.30), transparent 60%),
-    radial-gradient(1.5px 1.5px at 151px 244px, rgba(255, 255, 255, 0.38), transparent 60%),
-    radial-gradient(1.5px 1.5px at 355px 331px, rgba(255, 255, 255, 0.26), transparent 60%),
-    radial-gradient(1.2px 1.2px at 15px 121px,  rgba(255, 255, 255, 0.26), transparent 60%),
-    radial-gradient(1.2px 1.2px at 132px 46px,  rgba(214, 222, 255, 0.30), transparent 60%),
-    radial-gradient(1.2px 1.2px at 221px 198px, rgba(255, 255, 255, 0.22), transparent 60%),
-    radial-gradient(1.2px 1.2px at 63px 249px,  rgba(255, 240, 214, 0.28), transparent 60%),
-    radial-gradient(1px 1px at 27px 33px,       rgba(255, 255, 255, 0.18), transparent 60%),
-    radial-gradient(1px 1px at 119px 87px,      rgba(255, 255, 255, 0.14), transparent 60%),
-    radial-gradient(1px 1px at 74px 156px,      rgba(255, 255, 255, 0.16), transparent 60%),
-    radial-gradient(1px 1px at 165px 122px,     rgba(255, 255, 255, 0.12), transparent 60%);
-  background-size:
-    400px 400px, 400px 400px, 400px 400px, 400px 400px,
-    290px 290px, 290px 290px, 290px 290px, 290px 290px,
-    190px 190px, 190px 190px, 190px 190px, 190px 190px;
+    radial-gradient(75% 55% at 50% -5%, rgba(201, 169, 110, 0.10), transparent 70%),
+    radial-gradient(125% 100% at 50% 35%, transparent 42%, rgba(0, 0, 0, 0.72) 100%);
 }
 
-/* Scrollbars, so the browser chrome does not stay light against the sky. */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #0b0b11; }
-::-webkit-scrollbar-thumb { background: #24242f; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #343442; }
+/* --- Shared pieces ---------------------------------------------------------
+   The components hand-roll Tailwind inline and there is no component library,
+   so the decisions that repeat live here once rather than in nine files.
+--------------------------------------------------------------------------- */
 
-/* Referenced by ProductDrawer's details column but never defined until now, so
-   the drawer has always shown a scrollbar the author meant to hide. */
+@layer components {
+  /* Small uppercase label: nav, categories, buttons, form labels. */
+  .label-caps {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  /* Outlined gold button; fills gold with black text on hover. */
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 1rem 2.75rem;
+    color: var(--color-gold);
+    background: transparent;
+    border: 1px solid rgba(201, 169, 110, 0.45);
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+  .btn-gold:hover:not(:disabled) {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: #0a0a0b;
+  }
+  .btn-gold:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Nav link with a gold underline that grows from the left on hover. */
+  .nav-link {
+    position: relative;
+    color: var(--color-ivory);
+    transition: color 0.4s ease;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.4rem;
+    height: 1px;
+    background: var(--color-gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
+  .nav-link:hover { color: var(--color-gold-hi); }
+
+  /* Gold hairline divider. */
+  .hairline {
+    border: 0;
+    border-top: 1px solid rgba(201, 169, 110, 0.25);
+  }
+
+  /* Quiet underlined input, used across contact and checkout. */
+  .field {
+    width: 100%;
+    background: transparent;
+    color: var(--color-ivory);
+    border: 0;
+    border-bottom: 1px solid rgba(201, 169, 110, 0.22);
+    padding: 0.6rem 0;
+    outline: none;
+    transition: border-color 0.4s ease;
+  }
+  .field:focus { border-bottom-color: var(--color-gold); }
+  .field::placeholder { color: var(--color-faint); }
+  .field:disabled { opacity: 0.5; }
+}
+
+/* Hero starfield: a handful of dust-specks that breathe. Deliberately slow and
+   low-contrast -- at full brightness this stops looking like velvet. */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.12; }
+  50%      { opacity: 0.65; }
+}
+
+/* Scrollbars, so browser chrome does not stay light against the page. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0a0a0b; }
+::-webkit-scrollbar-thumb { background: #242426; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gold-deep); }
+
+/* Referenced by ProductDrawer's details column but never defined until now. */
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Framer Motion is JS-driven and ignores this, so the Ken Burns hero and the
+   drawer transitions use useReducedMotion() in their components instead. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

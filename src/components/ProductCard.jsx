@@ -1,43 +1,38 @@
 // src/components/ProductCard.jsx
-import React from 'react';
 
 const ProductCard = ({ product, onClick }) => {
   // Determine if product is new (e.g., created in the last 30 days)
   const isNew = (new Date() - new Date(product.createdAt)) / (1000 * 60 * 60 * 24) < 30;
 
   return (
-    <div 
-        onClick={() => onClick(product)}
-        className="group relative w-full overflow-hidden bg-raised/70 backdrop-blur-sm border border-hairline hover:border-gold/40 shadow-sm hover:shadow-lg hover:shadow-black/50 transition-all duration-300 rounded-lg cursor-pointer"
-    >
-      <div className="aspect-[3/4] w-full overflow-hidden bg-surface relative">
+    <div onClick={() => onClick(product)} className="group cursor-pointer">
+      {/* bg-velvet, not a panel tone: the photos are cut on near-black, so any
+          lighter surface here would outline each one as a rectangle. No border,
+          no radius, no shadow at rest -- the photo should simply float. */}
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-velvet transition-shadow duration-500 group-hover:shadow-[0_0_60px_-10px_rgba(201,169,110,0.28)]">
         <img
           src={product.images[0]}
           alt={product.name}
-          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         />
+
+        {/* Thin gold frame, inset so it reads as a mount rather than a border. */}
+        <div className="pointer-events-none absolute inset-4 border border-gold/0 group-hover:border-gold/40 transition-colors duration-500" />
+
         {isNew && (
-            <span className="absolute top-4 left-4 bg-gold text-void text-xs uppercase tracking-widest py-1 px-3 z-10">
-                New Arrival
-            </span>
+          <span className="absolute top-5 left-5 label-caps text-gold text-[10px] z-10">
+            New
+          </span>
         )}
       </div>
-      <div className="p-6 flex flex-col items-center text-center">
-        <h3 className="font-serif text-2xl text-ink mb-2">
-            <span aria-hidden="true" className="absolute inset-0" />
-            {product.name}
-        </h3>
-        <p className="text-ink-muted text-sm mb-1">{product.category}</p>
-        <p className="font-medium text-lg text-gold mt-2">${product.price.toFixed(2)}</p>
-        
-        {/* Simple visual cue that it's clickable on hover */}
-        <p className="text-xs uppercase tracking-widest border-b border-gold text-gold mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            View Details
-        </p>
+
+      <div className="pt-7 pb-2 flex flex-col items-center text-center">
+        <h3 className="font-serif font-light text-2xl text-ivory mb-2">{product.name}</h3>
+        <p className="label-caps text-faint text-[10px] mb-4">{product.category}</p>
+        <p className="label-caps text-gold">${product.price.toFixed(2)}</p>
       </div>
     </div>
   );
 };
-
 
 export default ProductCard;

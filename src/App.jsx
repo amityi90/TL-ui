@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import CartPage from './components/CartPage';
 import About from './components/About';
 import Contact from './components/Contact';
+import ConstellationDivider from './components/ConstellationDivider';
 import { CartProvider } from './context/CartContext';
 import { ContentProvider, useContent } from './context/ContentContext';
 
@@ -61,7 +62,7 @@ function Store() {
     switch(currentView) {
         case 'cart':
             return (
-                <main className="flex-grow pt-20 fade-in">
+                <main className="flex-grow pt-32 fade-in">
                     <CartPage onClose={() => setCurrentView('home')} apiUrl={apiUrl} />
                 </main>
             );
@@ -75,17 +76,21 @@ function Store() {
                 <>
                 <Hero />
                 <main className="flex-grow" id="collections">
-                  <section className="py-20">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div className="text-center max-w-2xl mx-auto mb-16">
-                          <h2 className="text-3xl md:text-4xl font-serif mb-4">{c('collections.heading')}</h2>
-                          <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-                          <p className="text-ink-muted">
+                  <section className="py-28 md:py-44">
+                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                      <div className="text-center max-w-xl mx-auto mb-20 md:mb-28">
+                          <h2 className="font-serif font-light text-4xl md:text-5xl text-ivory mb-8">
+                            {c('collections.heading')}
+                          </h2>
+                          <ConstellationDivider className="mb-8" />
+                          <p className="text-muted leading-relaxed">
                               {c('collections.body')}
                           </p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                      {/* Wide gutters: the restraint is what makes it read as a
+                          gallery wall rather than a catalogue grid. */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-20 md:gap-y-28">
                         {Array.isArray(products) && products.map((product) => (
                           <ProductCard
                             key={product.id}
@@ -103,20 +108,20 @@ function Store() {
   };
 
   return (
-    <div className="font-sans antialiased text-ink bg-transparent flex flex-col min-h-screen">
-      <Navbar 
+    <div className="font-sans antialiased text-muted bg-transparent flex flex-col min-h-screen">
+      <Navbar
         onCartClick={() => handleNavClick(currentView === 'cart' ? 'home' : 'cart')}
         onNavClick={handleNavClick}
       />
-      
+
       {renderContent()}
 
       <Footer onNavClick={handleNavClick} />
-      
-      <ProductDrawer 
-        product={selectedProduct} 
-        isOpen={!!selectedProduct} 
-        onClose={closeDrawer} 
+
+      <ProductDrawer
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={closeDrawer}
       />
     </div>
   );

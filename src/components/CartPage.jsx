@@ -34,13 +34,13 @@ const COUNTRIES = [
 const appearance = {
   theme: 'night',
   variables: {
-    colorPrimary: '#d4af37',
-    colorBackground: '#12121a',
-    colorText: '#f2efe9',
-    colorTextSecondary: '#a8a49b',
-    colorTextPlaceholder: '#6f6b63',
-    colorDanger: '#f87171',
-    fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+    colorPrimary: '#c9a96e',
+    colorBackground: '#121214',
+    colorText: '#ece6da',
+    colorTextSecondary: '#9c968c',
+    colorTextPlaceholder: '#6b665e',
+    colorDanger: '#c98b6e',
+    fontFamily: 'Jost, ui-sans-serif, system-ui, sans-serif',
     fontSizeBase: '15px',
     spacingUnit: '4px',
     borderRadius: '0px'
@@ -49,26 +49,26 @@ const appearance = {
     '.Input': {
       backgroundColor: 'transparent',
       border: '0',
-      borderBottom: '1px solid #24242f',
+      borderBottom: '1px solid rgba(201,169,110,0.22)',
       padding: '8px 0',
       boxShadow: 'none'
     },
-    '.Input:focus': { borderBottom: '1px solid #d4af37', boxShadow: 'none', outline: 'none' },
+    '.Input:focus': { borderBottom: '1px solid #c9a96e', boxShadow: 'none', outline: 'none' },
     '.Label': {
       fontSize: '12px',
       textTransform: 'uppercase',
-      letterSpacing: '0.05em',
-      color: '#6f6b63'
+      letterSpacing: '0.2em',
+      color: '#6b665e'
     },
-    '.Tab': { backgroundColor: '#12121a', border: '1px solid #24242f', boxShadow: 'none' },
-    '.Tab:hover': { color: '#f2efe9' },
-    '.Tab--selected': { border: '1px solid #d4af37', color: '#d4af37' }
+    '.Tab': { backgroundColor: '#121214', border: '1px solid rgba(201,169,110,0.22)', boxShadow: 'none' },
+    '.Tab:hover': { color: '#ece6da' },
+    '.Tab--selected': { border: '1px solid #c9a96e', color: '#c9a96e' }
   }
 };
 
-const inputClass =
-  'w-full border-b border-hairline focus:border-gold py-2 outline-none transition-colors bg-transparent text-ink placeholder-ink-faint disabled:opacity-50';
-const labelClass = 'text-xs text-ink-faint uppercase tracking-wider';
+// Both now defined once in src/index.css so every form on the site matches.
+const inputClass = 'field';
+const labelClass = 'label-caps text-faint text-[10px]';
 
 function CheckoutForm({ onClose, apiUrl }) {
   const stripe = useStripe();
@@ -234,20 +234,20 @@ function CheckoutForm({ onClose, apiUrl }) {
 
   if (success) {
     return (
-      <div className="max-w-lg mx-auto text-center py-20">
-        <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-8">
+      <div className="max-w-lg mx-auto text-center py-28">
+        <div className="w-16 h-16 rounded-full border border-gold/40 flex items-center justify-center mx-auto mb-10">
           <svg className="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-3xl font-serif mb-4">Thank You</h2>
-        <p className="text-ink-muted mb-2">Your payment was received and your order is confirmed.</p>
-        <p className="text-sm text-ink-muted mb-10">
-          Order number <span className="font-medium text-gold">#{success.orderId}</span>
+        <h2 className="font-serif font-light text-4xl text-ivory mb-5">Thank You</h2>
+        <p className="text-muted mb-3">Your payment was received and your order is confirmed.</p>
+        <p className="text-sm text-muted mb-12">
+          Order number <span className="text-gold">#{success.orderId}</span>
         </p>
         <button
           onClick={onClose}
-          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="label-caps text-gold border-b border-gold/40 hover:border-gold pb-1 transition-colors duration-500"
         >
           Continue Shopping
         </button>
@@ -256,29 +256,29 @@ function CheckoutForm({ onClose, apiUrl }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-16">
-      <div className="flex-1 space-y-12">
+    <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+      <div className="flex-1 space-y-16">
         {/* 1. Review Items */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
+          <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-4">
             1. Shopping Bag ({cart.length})
           </h2>
-          <div className="space-y-6 max-h-60 overflow-y-auto pr-2">
+          <div className="space-y-7 max-h-72 overflow-y-auto pr-2 no-scrollbar">
             {cart.map((item) => (
               <div key={item.id} className="flex gap-4 items-center">
-                <div className="w-16 h-20 bg-surface shrink-0">
+                <div className="w-16 h-20 bg-velvet shrink-0">
                   <img src={item.images?.[0]} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-serif">{item.name}</h3>
-                  <p className="text-xs text-ink-muted">Qty: {item.quantity}</p>
+                  <h3 className="font-serif text-lg text-ivory">{item.name}</h3>
+                  <p className="label-caps text-faint text-[10px] mt-1">Qty: {item.quantity}</p>
                 </div>
-                <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                <p className="label-caps text-gold">${(item.price * item.quantity).toFixed(2)}</p>
                 <button
                   type="button"
                   onClick={() => removeFromCart(item.id)}
                   disabled={isProcessing}
-                  className="text-ink-faint hover:text-red-400 disabled:opacity-40"
+                  className="text-faint hover:text-gold transition-colors duration-500 disabled:opacity-40"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -291,26 +291,26 @@ function CheckoutForm({ onClose, apiUrl }) {
 
         {/* 2. Shipping Address */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
+          <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-4">
             2. Shipping Address
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+            <div className="space-y-2">
               <label className={labelClass}>Full Name</label>
               <input type="text" name="fullName" value={shipping.fullName} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="Jane Doe" autoComplete="name" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className={labelClass}>Email Address</label>
               <input type="email" name="email" value={shipping.email} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="jane@example.com" autoComplete="email" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className={labelClass}>Phone Number</label>
               <input type="tel" name="phone" value={shipping.phone} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="+1 310 555 0123" autoComplete="tel" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className={labelClass}>Country</label>
               <select name="country" value={shipping.country} onChange={handleInputChange}
                 disabled={isProcessing} className={`${inputClass} appearance-none`} autoComplete="country">
@@ -324,12 +324,12 @@ function CheckoutForm({ onClose, apiUrl }) {
               <input type="text" name="address" value={shipping.address} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="123 Luxury Lane, Apt 4B" autoComplete="street-address" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className={labelClass}>City</label>
               <input type="text" name="city" value={shipping.city} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="New York" autoComplete="address-level2" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className={labelClass}>Postal Code</label>
               <input type="text" name="postalCode" value={shipping.postalCode} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="10001" autoComplete="postal-code" />
@@ -339,7 +339,7 @@ function CheckoutForm({ onClose, apiUrl }) {
 
         {/* 3. Payment */}
         <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-2">
+          <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-4">
             3. Payment Details
           </h2>
           <div className="max-w-md">
@@ -350,38 +350,38 @@ function CheckoutForm({ onClose, apiUrl }) {
 
       {/* Order Summary */}
       <div className="lg:w-96 shrink-0">
-        <div className="bg-raised/70 backdrop-blur-sm border border-hairline p-8 sticky top-24">
-          <h2 className="text-lg font-bold uppercase tracking-widest mb-6 border-b border-hairline pb-4">
+        <div className="bg-panel border border-gold/20 p-10 sticky top-28">
+          <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-5">
             Order Summary
           </h2>
 
-          <div className="space-y-4 text-sm text-ink-muted mb-8">
+          <div className="space-y-5 text-sm text-muted mb-10">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span className="text-ink font-medium">Complimentary</span>
+              <span className="text-ivory">Complimentary</span>
             </div>
-            <div className="flex justify-between font-medium text-gold text-xl pt-4 border-t border-hairline mt-4">
+            <div className="flex justify-between font-serif text-gold text-2xl pt-5 border-t border-gold/25 mt-5">
               <span>Total</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
           </div>
 
           {errorMessage && (
-            <div className="text-red-300 text-sm mb-4 bg-red-500/10 border border-red-500/30 p-3">{errorMessage}</div>
+            <div className="text-[#c98b6e] text-sm mb-5 border border-[#c98b6e]/35 p-4">{errorMessage}</div>
           )}
 
           <button
             type="submit"
             disabled={!stripe || isProcessing}
-            className="w-full bg-gold text-void font-medium text-sm uppercase tracking-[0.2em] py-4 hover:bg-gold-soft disabled:bg-gold-dim disabled:text-ink-faint disabled:cursor-not-allowed transition-all duration-300"
+            className="btn-gold w-full"
           >
             {isProcessing ? 'Processing…' : 'Complete Purchase'}
           </button>
-          <p className="text-xs text-center text-ink-faint mt-4 flex items-center justify-center gap-1">
+          <p className="label-caps text-[10px] text-center text-faint mt-5 flex items-center justify-center gap-1">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -396,11 +396,11 @@ function CheckoutForm({ onClose, apiUrl }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-void/80 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-velvet/85 backdrop-blur-sm flex items-center justify-center"
           >
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-hairline border-t-gold rounded-full animate-spin mx-auto mb-4"></div>
-              <h3 className="text-xl font-serif">Processing Secure Payment…</h3>
+              <div className="w-10 h-10 border border-gold/25 border-t-gold rounded-full animate-spin mx-auto mb-6"></div>
+              <h3 className="font-serif font-light text-2xl text-ivory">Processing Secure Payment…</h3>
             </div>
           </motion.div>
         )}
@@ -415,11 +415,11 @@ export default function CartPage({ onClose, apiUrl }) {
   if (cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <h2 className="text-3xl font-serif mb-4">Your Cart is Empty</h2>
-        <p className="text-ink-muted mb-8">Looks like you haven't added any luxury items yet.</p>
+        <h2 className="font-serif font-light text-4xl text-ivory mb-5">Your Cart is Empty</h2>
+        <p className="text-muted mb-10">Looks like you haven't added any luxury items yet.</p>
         <button
           onClick={onClose}
-          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="label-caps text-gold border-b border-gold/40 hover:border-gold pb-1 transition-colors duration-500"
         >
           Return to Shop
         </button>
@@ -430,13 +430,13 @@ export default function CartPage({ onClose, apiUrl }) {
   if (!stripePromise) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <h2 className="text-3xl font-serif mb-4">Checkout Unavailable</h2>
-        <p className="text-ink-muted mb-8">
+        <h2 className="font-serif font-light text-4xl text-ivory mb-5">Checkout Unavailable</h2>
+        <p className="text-muted mb-10">
           Payments are not configured. Please try again shortly.
         </p>
         <button
           onClick={onClose}
-          className="border-b border-gold text-gold uppercase tracking-widest text-sm pb-1 hover:opacity-60 transition-opacity"
+          className="label-caps text-gold border-b border-gold/40 hover:border-gold pb-1 transition-colors duration-500"
         >
           Return to Shop
         </button>
@@ -454,8 +454,8 @@ export default function CartPage({ onClose, apiUrl }) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative">
-      <h1 className="text-4xl font-serif mb-12 text-center md:text-left">Checkout</h1>
+    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24 relative">
+      <h1 className="font-serif font-light text-5xl text-ivory mb-16 text-center md:text-left">Checkout</h1>
       <Elements stripe={stripePromise} options={options}>
         <CheckoutForm onClose={onClose} apiUrl={apiUrl} />
       </Elements>
