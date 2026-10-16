@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { formatUSD } from '../utils/money';
 
 // --- Lightbox Component ---
 const Lightbox = ({ images, initialIndex, onClose }) => {
@@ -139,7 +140,17 @@ const Lightbox = ({ images, initialIndex, onClose }) => {
 
 export default function ProductDrawer({ product, isOpen, onClose }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const { addToCart } = useCart();
+  // Which photo the drawer shows, and where the lightbox opens. Tagged with the
+  // product it belongs to, so opening a different product starts at photo one.
+  const [imageChoice, setImageChoice] = useState({ productId: null, index: 0 });
+  const activeImage = imageChoice.productId === product?.id ? imageChoice.index : 0;
+  const setActiveImage = (index) => setImageChoice({ productId: product?.id, index });
+  const { addToCart, cart } = useCart();
+
+  const images = product?.images?.length ? product.images : [];
+  const inCart = cart.find((item) => item.id === product?.id)?.quantity ?? 0;
+  const isSoldOut = !product || product.stockCount <= 0;
+  const atStockLimit = !isSoldOut && inCart >= product.stockCount;
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -204,7 +215,7 @@ export default function ProductDrawer({ product, isOpen, onClose }) {
                 onClick={() => setIsLightboxOpen(true)}
             >
               <img
-                src={product.images[0]}
+                src={images[activeImage]}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
@@ -222,7 +233,27 @@ export default function ProductDrawer({ product, isOpen, onClose }) {
               <div className="flex-1">
                 <p className="label-caps text-gold mb-5">{product.category}</p>
                 <h2 className="font-serif font-light text-4xl md:text-5xl text-ivory mb-6 leading-[1.1]">{product.name}</h2>
-                <p className="label-caps text-gold text-xs mb-12">${product.price.toFixed(2)}</p>
+                <p className="label-caps text-gold text-xs mb-12">{formatUSD(product.price)}</p>
+
+                {/* Every photo, not just the first: the lightbox used to be the
+                    only way to discover a product had more than one. */}
+                {images.length > 1 && (
+                  <div className="flex gap-3 mb-12 flex-wrap">
+                    {images.map((src, index) => (
+                      <button
+                        key={src + index}
+                        type="button"
+                        onClick={() => setActiveImage(index)}
+                        aria-label={`Show photo ${index + 1}`}
+                        className={`w-16 h-20 bg-velvet overflow-hidden border transition-colors duration-500 ${
+                          index === activeImage ? 'border-gold' : 'border-gold/15 hover:border-gold/50'
+                        }`}
+                      >
+                        <img src={src} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <hr className="hairline mb-10" />
 
@@ -242,7 +273,9 @@ export default function ProductDrawer({ product, isOpen, onClose }) {
                     </li>
                     <li className="flex justify-between border-b border-gold/15 pb-3">
                         <span>In Stock</span>
-                        <span className="text-ivory">{product.stockCount} units</span>
+                        <span className="text-ivory">
+                          {isSoldOut ? 'Sold out' : `${product.stockCount} ${product.stockCount === 1 ? 'piece' : 'pieces'}`}
+                        </span>
                     </li>
                   </ul>
                 </div>
@@ -250,8 +283,12 @@ export default function ProductDrawer({ product, isOpen, onClose }) {
 
               {/* Action Button */}
               <div className="mt-auto pt-8">
-                <button onClick={handleAddToCart} className="btn-gold w-full">
-                  Add to Cart
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isSoldOut || atStockLimit}
+                  className="btn-gold w-full"
+                >
+                  {isSoldOut ? 'Sold Out' : atStockLimit ? 'All Available Pieces In Cart' : 'Add to Cart'}
                 </button>
               </div>
             </div>
@@ -262,10 +299,10 @@ export default function ProductDrawer({ product, isOpen, onClose }) {
 
     {/* Lightbox Overlay */}
     <AnimatePresence>
-        {isLightboxOpen && product && (
+        {isLightboxOpen && product && images.length > 0 && (
             <Lightbox
-                images={product.images}
-                initialIndex={0}
+                images={images}
+                initialIndex={activeImage}
                 onClose={() => setIsLightboxOpen(false)}
             />
         )}

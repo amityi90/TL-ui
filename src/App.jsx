@@ -8,23 +8,32 @@ import CartPage from './components/CartPage';
 import About from './components/About';
 import Contact from './components/Contact';
 import ConstellationDivider from './components/ConstellationDivider';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { ContentProvider, useContent } from './context/ContentContext';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function Store() {
   const { c } = useContent();
+  const { syncWithCatalog } = useCart();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'cart', 'about', 'contact'
+
+  // Refetched on entering the shop or the cart, so stock and prices reflect
+  // orders placed since the page loaded - including the visitor's own.
+  const catalogView = currentView === 'home' || currentView === 'cart' ? currentView : null;
 
   useEffect(() => {
+    if (!catalogView) return undefined;
     const controller = new AbortController();
     const fetchProducts = async () => {
       try {
         const res = await fetch(`${apiUrl}/api/products`, { signal: controller.signal });
         const data = await res.json();
-        setProducts(Array.isArray(data?.data) ? data.data : []);
+        const list = Array.isArray(data?.data) ? data.data : [];
+        setProducts(list);
+        syncWithCatalog(list);
       } catch (error) {
         if (error.name === 'AbortError') return;
         console.error("Failed to fetch products:", error);
@@ -33,9 +42,7 @@ function Store() {
     };
     fetchProducts();
     return () => controller.abort();
-  }, []);
-
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'cart', 'about', 'contact'
+  }, [catalogView, syncWithCatalog]);
 
   // Covers programmatic view changes, e.g. CartPage's "Return to Shop".
   useEffect(() => {
@@ -69,7 +76,7 @@ function Store() {
         case 'about':
             return <About />;
         case 'contact':
-            return <Contact />;
+            return <Contact apiUrl={apiUrl} />;
         case 'home':
         default:
             return (

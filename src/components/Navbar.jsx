@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
+import { useContent } from "../context/ContentContext";
 
 const LINKS = [
   { label: "Collections", view: "home" },
@@ -14,7 +15,8 @@ export default function Navbar({ onCartClick, onNavClick }) {
   // below md, leaving the cart as the only reachable control on a phone.
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { scrollY } = useScroll();
-  const { totalItems, isToastOpen } = useCart();
+  const { totalItems, isToastOpen, toastMessage } = useCart();
+  const { c } = useContent();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
@@ -67,7 +69,7 @@ export default function Navbar({ onCartClick, onNavClick }) {
             onClick={() => go("home")}
             className="justify-self-center font-serif font-light text-ivory text-lg md:text-2xl tracking-[0.35em] uppercase hover:text-gold transition-colors duration-500 pl-[0.35em]"
           >
-            Tehila Levi
+            {c("footer.brand")}
           </button>
 
           {/* Right: cart */}
@@ -118,7 +120,7 @@ export default function Navbar({ onCartClick, onNavClick }) {
             exit={{ opacity: 0 }}
             className="fixed top-24 right-6 md:right-12 z-[100] bg-panel border border-gold/30 text-ivory label-caps px-6 py-4 shadow-2xl shadow-black/60"
           >
-            Item Added to Cart
+            {toastMessage}
           </motion.div>
         )}
       </AnimatePresence>

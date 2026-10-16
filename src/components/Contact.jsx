@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useContent } from '../context/ContentContext';
 import ConstellationDivider from './ConstellationDivider';
 
-export default function Contact() {
+export default function Contact({ apiUrl }) {
   const { c } = useContent();
 
   const subjectOptions = [1, 2, 3, 4]
@@ -21,17 +21,46 @@ export default function Contact() {
     // Reads the first option rather than repeating its text, so renaming it in
     // the admin can't desync the default from the list.
     subject: subjectOptions[0] || '',
-    message: ''
+    message: '',
+    // Honeypot. Hidden from people; bots that fill every field give themselves away.
+    website: ''
   });
+  const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (status === 'error') setStatus('idle');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert(c('contact.form_success'));
+    if (status === 'sending') return;
+
+    setStatus('sending');
+    setErrorMessage('');
+    try {
+      const response = await fetch(`${apiUrl}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!response.ok) {
+        let message = 'Your message could not be sent. Please try again.';
+        try {
+          message = (await response.json())?.message || message;
+        } catch {
+          // Non-JSON error page; keep the generic message.
+        }
+        throw new Error(message);
+      }
+      setStatus('sent');
+      setFormData((prev) => ({ ...prev, name: '', email: '', message: '', website: '' }));
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setErrorMessage(error.message);
+      setStatus('error');
+    }
   };
 
   return (
@@ -115,7 +144,34 @@ export default function Contact() {
                 transition={{ duration: 0.8, delay: 0.4 }}
             >
                 <h2 className="font-serif font-light text-3xl text-ivory mb-10">{c('contact.form_heading')}</h2>
+                {status === 'sent' ? (
+                    <div className="border border-gold/30 p-10 text-center space-y-8">
+                        <p className="text-ivory leading-relaxed">{c('contact.form_success')}</p>
+                        <button
+                            type="button"
+                            onClick={() => setStatus('idle')}
+                            className="label-caps text-gold border-b border-gold/40 hover:border-gold pb-1 transition-colors duration-500"
+                        >
+                            Send Another Message
+                        </button>
+                    </div>
+                ) : (
                 <form onSubmit={handleSubmit} className="space-y-10">
+
+                    {/* Honeypot: off-screen and out of the tab order, so only bots fill it. */}
+                    <div aria-hidden="true" className="absolute -left-[10000px] w-px h-px overflow-hidden">
+                        <label>
+                            Website
+                            <input
+                                type="text"
+                                name="website"
+                                tabIndex={-1}
+                                autoComplete="off"
+                                value={formData.website}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
 
                     <div className="space-y-2">
                         <label className="label-caps text-faint text-[10px]">{c('contact.form_label_name')}</label>
@@ -125,6 +181,7 @@ export default function Contact() {
                             required
                             value={formData.name}
                             onChange={handleChange}
+                            disabled={status === 'sending'}
                             className="field"
                         />
                     </div>
@@ -137,6 +194,7 @@ export default function Contact() {
                             required
                             value={formData.email}
                             onChange={handleChange}
+                            disabled={status === 'sending'}
                             className="field"
                         />
                     </div>
@@ -147,6 +205,7 @@ export default function Contact() {
                             name="subject"
                             value={formData.subject}
                             onChange={handleChange}
+                            disabled={status === 'sending'}
                             className="field appearance-none"
                         >
                             {subjectOptions.map((option) => (
@@ -163,14 +222,20 @@ export default function Contact() {
                             rows="4"
                             value={formData.message}
                             onChange={handleChange}
+                            disabled={status === 'sending'}
                             className="field resize-none"
                         ></textarea>
                     </div>
 
-                    <button type="submit" className="btn-gold w-full">
-                        {c('contact.form_submit')}
+                    {status === 'error' && (
+                        <div className="text-[#c98b6e] text-sm border border-[#c98b6e]/35 p-4">{errorMessage}</div>
+                    )}
+
+                    <button type="submit" disabled={status === 'sending'} className="btn-gold w-full">
+                        {status === 'sending' ? 'Sending…' : c('contact.form_submit')}
                     </button>
                 </form>
+                )}
             </motion.div>
 
         </div>
