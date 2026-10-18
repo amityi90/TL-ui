@@ -3,6 +3,8 @@ import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatUSD } from '../utils/money';
 import ManualPayment from '../payments/ManualPayment';
+import ShippingOptions from '../shipping/ShippingOptions';
+import { useShippingRates, STATE_REQUIRED } from '../shipping/useShippingRates';
 
 // ISO 3166-1 alpha-2, which is what the API stores. The field used to be free
 // text, so "United States" was being sent where "US" was required.
@@ -49,27 +51,33 @@ function CheckoutForm({ apiUrl, onSuccess }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // An order already created on the server for this exact cart. If the payment
-  // step fails, the retry reuses it instead of placing (and reserving stock
-  // for) a second order.
-  const [placedOrder, setPlacedOrder] = useState(null);
-  const cartSignature = useMemo(
-    () => cart.map((item) => `${item.id}x${item.quantity}`).join(','),
-    [cart]
-  );
-  useEffect(() => {
-    if (placedOrder && placedOrder.cartSignature !== cartSignature) setPlacedOrder(null);
-  }, [cartSignature, placedOrder]);
-
   const [shipping, setShipping] = useState({
     fullName: '',
     email: '',
     phone: '',
     address: '',
     city: '',
+    state: '',
     postalCode: '',
     country: 'US'
   });
+  const needsState = STATE_REQUIRED.has(shipping.country);
+
+  const rates = useShippingRates({ apiUrl, cart, address: shipping });
+  const shippingCost = rates.selectedRate?.amount ?? 0;
+
+  // An order already created on the server for this exact cart and shipping
+  // choice. If the payment step fails, the retry reuses it instead of placing
+  // (and reserving stock for) a second order.
+  const [placedOrder, setPlacedOrder] = useState(null);
+  const cartSignature = useMemo(
+    () =>
+      `${cart.map((item) => `${item.id}x${item.quantity}`).join(',')}|${rates.quoteId}|${rates.selectedRate?.id}`,
+    [cart, rates.quoteId, rates.selectedRate?.id]
+  );
+  useEffect(() => {
+    if (placedOrder && placedOrder.cartSignature !== cartSignature) setPlacedOrder(null);
+  }, [cartSignature, placedOrder]);
 
   const PaymentStep = PAYMENT_COMPONENTS[DEFAULT_PAYMENT_MODE];
 
@@ -91,9 +99,11 @@ function CheckoutForm({ apiUrl, onSuccess }) {
       ['postalCode', 'postal code'],
       ['country', 'country']
     ];
+    if (needsState) required.splice(5, 0, ['state', 'state / province']);
     const missing = required.filter(([key]) => !shipping[key]?.trim());
     if (missing.length > 0) return `Please enter your ${missing[0][1]}.`;
     if (!/^\S+@\S+\.\S+$/.test(shipping.email)) return 'Please enter a valid email address.';
+    if (!rates.selectedRate) return 'Please choose a shipping method.';
     return null;
   };
 
@@ -125,10 +135,16 @@ function CheckoutForm({ apiUrl, onSuccess }) {
       if (!order) {
         const orderResponse = await postJson('/api/orders', {
           cartItems: cart.map((item) => ({ id: item.id, quantity: item.quantity })),
-          shippingAddress: shipping
+          shippingAddress: shipping,
+          // Ids only: the server prices shipping from the quote it issued.
+          shipping: { quoteId: rates.quoteId, rateId: rates.selectedRate.id }
         });
         if (!orderResponse.ok) {
-          throw new Error(await readError(orderResponse, 'We could not create your order.'));
+          const body = await orderResponse.json().catch(() => null);
+          // Usually a quote that timed out while the customer filled the form:
+          // fetch fresh options so they only need to choose again.
+          if (body?.code === 'SHIPPING_QUOTE_INVALID') rates.refresh();
+          throw new Error(body?.message || 'We could not create your order.');
         }
         const created = (await orderResponse.json()).data;
         order = { id: created.id, totalAmount: created.totalAmount, cartSignature };
@@ -263,6 +279,13 @@ function CheckoutForm({ apiUrl, onSuccess }) {
                 disabled={isProcessing} className={inputClass} placeholder="New York" autoComplete="address-level2" />
             </div>
             <div className="space-y-2">
+              <label className={labelClass}>
+                State / Region{needsState ? '' : ' (optional)'}
+              </label>
+              <input type="text" name="state" value={shipping.state} onChange={handleInputChange}
+                disabled={isProcessing} className={inputClass} placeholder={needsState ? 'NY' : ''} autoComplete="address-level1" />
+            </div>
+            <div className="space-y-2">
               <label className={labelClass}>Postal Code</label>
               <input type="text" name="postalCode" value={shipping.postalCode} onChange={handleInputChange}
                 disabled={isProcessing} className={inputClass} placeholder="10001" autoComplete="postal-code" />
@@ -270,10 +293,30 @@ function CheckoutForm({ apiUrl, onSuccess }) {
           </div>
         </section>
 
-        {/* 3. Payment */}
+        {/* 3. Shipping Method */}
         <section>
           <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-4">
-            3. Payment
+            3. Shipping Method
+          </h2>
+          <ShippingOptions
+            status={rates.status}
+            rates={rates.rates}
+            error={rates.error}
+            addressComplete={rates.addressComplete}
+            selectedRateId={rates.selectedRate?.id ?? null}
+            onSelect={(id) => {
+              rates.selectRate(id);
+              if (errorMessage) setErrorMessage('');
+            }}
+            onRetry={rates.refresh}
+            disabled={isProcessing}
+          />
+        </section>
+
+        {/* 4. Payment */}
+        <section>
+          <h2 className="label-caps text-gold mb-8 border-b border-gold/25 pb-4">
+            4. Payment
           </h2>
           <PaymentStep />
         </section>
@@ -291,13 +334,19 @@ function CheckoutForm({ apiUrl, onSuccess }) {
               <span>Subtotal</span>
               <span>{formatUSD(subtotal)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span>Shipping</span>
-              <span className="text-ivory">Complimentary</span>
+              <span className="text-ivory text-right">
+                {!rates.selectedRate
+                  ? 'Select a method'
+                  : shippingCost === 0
+                    ? 'Complimentary'
+                    : formatUSD(shippingCost)}
+              </span>
             </div>
             <div className="flex justify-between font-serif text-gold text-2xl pt-5 border-t border-gold/25 mt-5">
               <span>Total</span>
-              <span>{formatUSD(subtotal)}</span>
+              <span>{formatUSD(subtotal + shippingCost)}</span>
             </div>
             <p className="text-[11px] text-faint">All prices in US dollars.</p>
           </div>
@@ -308,7 +357,7 @@ function CheckoutForm({ apiUrl, onSuccess }) {
 
           <button
             type="submit"
-            disabled={isProcessing || cart.length === 0}
+            disabled={isProcessing || cart.length === 0 || !rates.selectedRate}
             className="btn-gold w-full"
           >
             {isProcessing ? 'Placing Order…' : 'Place Order'}
